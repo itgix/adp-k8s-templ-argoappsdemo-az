@@ -21,41 +21,48 @@ spec:
       values: |
         global:
           vars:
-            DB_HOST: "{{  index .Values "infra-services" "rds_cluster_endpoint" }}"
+            DB_HOST: "{{  index .Values "infra-services" "postgres_server_endpoint" }}"
           env:
-            AWS_REGION: "{{  index .Values "infra-services" "region" }}"
+            AZURE_REGION: "{{  index .Values "infra-services" "region" }}"
         itgix-portal:
           externalsecretEnv:
             enabled: true
             env:
             - name: "DB_USERNAME"
-              key: "{{  index .Values "infra-services" "rds_master_credentials_secret_arn" }}"
+              key: "{{  index .Values "infra-services" "db_credentials_secret_name" }}"
               property: "username"
             - name: "DB_PASSWORD"
-              key: "{{  index .Values "infra-services" "rds_master_credentials_secret_arn" }}"
+              key: "{{  index .Values "infra-services" "db_credentials_secret_name" }}"
               property: "password"
             - name: "GOOGLE_CLIENT_ID"
-              key: "{{  index .Values "infra-services" "custom_secret_arns" "itgix-portal-google-OAuth" }}"
-              property: "GOOGLE_CLIENT_ID"
+              key: "{{  index .Values "infra-services" "google_oauth_secret_name" }}"
+              property: "client-id"
             - name: "GOOGLE_CLIENT_SECRET"
-              key: "{{  index .Values "infra-services" "custom_secret_arns" "itgix-portal-google-OAuth" }}"
-              property: "GOOGLE_CLIENT_SECRET"
+              key: "{{  index .Values "infra-services" "google_oauth_secret_name" }}"
+              property: "client-secret"
           cm:
             env:
-              DB_URL: {{  index .Values "infra-services" "rds_cluster_endpoint" }}
+              DB_URL: {{  index .Values "infra-services" "postgres_server_endpoint" }}
               OAUTH_REDIRECT_URI: "https://itgix-portal-{{ index .Values "infra-services" "environment" }}-{{ index .Values "infra-services" "region" }}.{{ index .Values "infra-services" "dns_main_domain" }}/login/oauth2/code/google-employee"
               FRONTEND_URL: "https://itgix-portal-{{ index .Values "infra-services" "environment" }}-{{ index .Values "infra-services" "region" }}.{{ index .Values "infra-services" "dns_main_domain" }}"
               {{- if (index .Values "infra-services" "itgix_portal_employee_login_enabled") }}
               EMPLOYEE_LOGIN_ENABLED: "true"
               {{- end }}
           ingress:
+            ingressClassName: traefik
             annotations:
+              cert-manager.io/cluster-issuer: letsencrypt
+              traefik.ingress.kubernetes.io/router.entrypoints: websecure
               external-dns.alpha.kubernetes.io/hostname: itgix-portal-{{ index .Values "infra-services" "environment" }}-{{ index .Values "infra-services" "region" }}.{{ index .Values "infra-services" "dns_main_domain" }}
             hosts:
               - host: itgix-portal-{{ index .Values "infra-services" "environment" }}-{{ index .Values "infra-services" "region" }}.{{ index .Values "infra-services" "dns_main_domain" }}
                 paths:
                   - /
                 port: 80
+            tls:
+              -  secretName: itgix-portal-tls
+                hosts:
+                  - itgix-portal-{{ index .Values "infra-services" "environment" }}-{{ index .Values "infra-services" "region" }}.{{ index .Values "infra-services" "dns_main_domain" }}
     path: helm/itgix-portal
     repoURL: {{ index .Values "infra-services" "applications_destination_repo" }}
     targetRevision: HEAD

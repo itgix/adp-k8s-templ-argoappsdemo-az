@@ -1,0 +1,28 @@
+# Environment-specific overrides for itgix-portal in dev/swedencentral
+
+global:
+  vars:
+    ENV_NAME: "dev"
+  env:
+    AZURE_REGION: "swedencentral"
+
+itgix-portal:
+  # Ingress hostname override for this environment
+  ingress:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: itgix-portal-dev-swedencentral.contoso.itigix.eu
+    hosts:
+    - host: itgix-portal-dev-swedencentral.contoso.itigix.eu
+      paths:
+        - /
+      port: 80
+    tls: 
+    - secretName: itgix-portal-tls
+      hosts:
+        - itgix-portal-dev-swedencentral.contoso.itigix.eu
+  
+  # ConfigMap environment overrides
+  cm:
+    env:
+      OAUTH_REDIRECT_URI: "https://itgix-portal-dev-swedencentral.contoso.itigix.eu/login/oauth2/code/google-employee"
+      FRONTEND_URL: "https://itgix-portal-dev-swedencentral.contoso.itigix.eu"

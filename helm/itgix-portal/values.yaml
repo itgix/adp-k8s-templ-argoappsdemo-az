@@ -2,17 +2,15 @@ global:
   # Variables that are used to build env vars for the specific environment
   vars:
     ENV_NAME: "dev"
-    DB_HOST: "rds-ew1-dev-adpminidemo-1.c3koo0sq447y.eu-west-1.rds.amazonaws.com"
-    BASE_DB_OPTS: "usessl=true&sslmode=require"
-    # BASE_DB_USER: "postgres"
-    # BASE_DB_PASS: "nopass"
-
+    DB_HOST: "psql-contoso-dev-swedencentral.postgres.database.azure.com"
+    BASE_DB_OPTS: "ssl=true&sslmode=require"
+    
     BASE_REDIS_HOST: "x-k8s-redis-headless"
     BASE_REDIS_USER: "default"
     BASE_REDIS_PASS: "mypasshere"
   # Env variables that are applied to every service
   env:
-    AWS_REGION: "eu-west-1"
+    AZURE_REGION: "swedencentral"
 
 itgix-portal:
   enabled: true
@@ -20,20 +18,18 @@ itgix-portal:
   externalsecretEnv:
     enabled: true
     env:
-    # - name: "itgix-portal-secret-github-token"
-    #   key: "arn:aws:secretsmanager:eu-west-1:791296381042:secret:ew1-dev-adpminidemo-itgix-portal-secret-github-token-O88xh7"
     - name: "DB_USERNAME"
-      key: "arn:aws:secretsmanager:eu-west-1:791296381042:secret:rds-ew1-dev-adpminidemo-tZKx43"
+      key: "itgix-portal-db-credentials"
       property: "username"
     - name: "DB_PASSWORD"
-      key: "arn:aws:secretsmanager:eu-west-1:791296381042:secret:rds-ew1-dev-adpminidemo-tZKx43"
+      key: "itgix-portal-db-credentials"
       property: "password"
     - name: "GOOGLE_CLIENT_ID"
-      key: "arn:aws:secretsmanager:eu-west-1:791296381042:secret:ew1-dev-adpminidemo-itgix-portal-google-OAuth-HQtdgq"
-      property: "GOOGLE_CLIENT_ID"
+      key: "itgix-portal-google-oauth"
+      property: "client-id"
     - name: "GOOGLE_CLIENT_SECRET"
-      key: "arn:aws:secretsmanager:eu-west-1:791296381042:secret:ew1-dev-adpminidemo-itgix-portal-google-OAuth-HQtdgq"
-      property: "GOOGLE_CLIENT_SECRET"
+      key: "itgix-portal-google-oauth"
+      property: "client-secret"
   cm:
     enabled: true
     env:
@@ -42,11 +38,10 @@ itgix-portal:
       OAUTH_REDIRECT_URI: "https://itgix-portal.adplab.itgix.eu/login/oauth2/code/google-employee"
       FRONTEND_URL: "https://itgix-portal.adplab.itgix.eu"
     dynamic:
-      DATASOURCE_DB_URL: "jdbc:postgresql://{{ .Values.global.vars.BASE_DB_URL }}:5432/postgres?{{ .Values.global.vars.BASE_DB_OPTS }}"
+      DATASOURCE_DB_URL: "jdbc:postgresql://{{ .Values.global.vars.DB_HOST }}:5432/{{ .Values.itgix-portal.cm.env.DB_NAME }}?{{ .Values.global.vars.BASE_DB_OPTS }}"
       DB_HOST: "{{ .Values.global.vars.DB_HOST }}"
-      REGION_NAME: "{{ .Values.global.env.AWS_REGION }}"
-      AWS_REGION: "{{ .Values.global.env.AWS_REGION }}"
-      AWS_DEFAULT_REGION: "{{ .Values.global.env.AWS_REGION }}"
+      REGION_NAME: "{{ .Values.global.env.AZURE_REGION }}"
+      AZURE_REGION: "{{ .Values.global.env.AZURE_REGION }}"
       REDIS_HOST: "{{ .Values.global.vars.BASE_REDIS_HOST }}"
       REDIS_PORT: "6379"
       REDIS_USE_SSL: "false"
@@ -54,28 +49,21 @@ itgix-portal:
 
   ingress:
     enabled: true
+    ingressClassName: "traefik"
     annotations:
-      kubernetes.io/ingress.class: alb
-      ingress.kubernetes.io/ssl-redirect: 'true'
+      cert-manager.io/cluster-issuer: letsencrypt
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
       external-dns.alpha.kubernetes.io/hostname: itgix-portal.adplab.itgix.eu
-      alb.ingress.kubernetes.io/actions.response-503: |
-        {"type":"fixed-response","fixedResponseConfig":{"contentType":"text/plain","statusCode":"503","messageBody":"503 Service Unavailable"}}
-      alb.ingress.kubernetes.io/ssl-redirect: "443"
-      alb.ingress.kubernetes.io/group.name: public-itgix-portal
-      alb.ingress.kubernetes.io/healthcheck-path: /health-check
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-      alb.ingress.kubernetes.io/scheme: internet-facing
-      alb.ingress.kubernetes.io/success-codes: 200-404
-      alb.ingress.kubernetes.io/target-type: ip
-      alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=10
     hosts:
     - host: itgix-portal.adplab.itgix.eu
       paths:
         - /
       port: 80
-    tls: []
-    dynamic:
-      enabled: false
+    tls: 
+    - secretName: itgix-portal-tls
+      hosts:
+        - itgix-portal.adplab.itgix.eu
+      enabled: true
 
   service:
     enabled: true
@@ -89,16 +77,17 @@ itgix-portal:
       nodePort: !!integer 30001
 
   serviceAccount:
-    enabled: false
-    name: "aurora-tc-irsa"
-    annotations: {}
+    enabled: true
+    name: "itgix-portal-sa"
+    annotations:
+      azure.workload.identity/client-id: "PLACEHOLDER_WORKLOAD_IDENTITY_CLIENT_ID"
 
   deployment:
     enabled: true
 
     serviceAccountName:
-      enabled: false
-      name: "aurora-tc-irsa"
+      enabled: true
+      name: "itgix-portal-sa"
 
     replicaCount: 1
 

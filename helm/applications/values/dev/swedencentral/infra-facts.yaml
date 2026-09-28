@@ -1,0 +1,16 @@
+# Azure infrastructure facts for dev/swedencentral
+# This file contains infrastructure-specific values that are generated or determined by the infrastructure layer
+
+infra-services:
+  # Git repository for applications
+  applications_destination_repo: "https://github.com/itgix/adp-k8s-templ-argoappsdemo-az.git"
+  
+  # Azure Key Vault name
+  key_vault_name: "kv-contoso-dev-sc"
+  
+  # Azure PostgreSQL Flexible Server
+  postgres_server_name: "psql-contoso-dev-swedencentral"
+  postgres_server_endpoint: "psql-contoso-dev-swedencentral.postgres.database.azure.com"
+  
+  # Workload Identity Client ID for itgix-portal (to be filled after creating managed identity)
+  itgix_portal_workload_identity_client_id: "PLACEHOLDER_CLIENT_ID"

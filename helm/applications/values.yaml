@@ -1,15 +1,18 @@
 infra-services:
-  aws_loadbalancer_enabled: true
+  traefik: true
   external_dns_enabled: true
   external_secrets_enabled: true
   demo_app_enabled: true
+  itgix_portal_enabled: true
 
-  aws-load-balancer-controller-version: 1.7.1
-  secrets-operator-version: 0.9.12
-  external-dns-version: HEAD
-
-  aws_account_id: ~
-  region: ~
-  eks_cluster_name: ~
-  vpc_id: ~
-  dns_hosted_zone: ~
+  region: swedencentral
+  environment: dev
+  dns_main_domain: contoso.itigix.eu
+  dns_private_zone: adp.csiliev.eu
+  
+  # Azure PostgreSQL configuration
+  postgres_server_endpoint: "psql-contoso-dev-swedencentral.postgres.database.azure.com"
+  
+  # Azure Key Vault secret names
+  db_credentials_secret_name: "itgix-portal-db-credentials"
+  google_oauth_secret_name: "itgix-portal-google-oauth"
