@@ -17,6 +17,7 @@ itgix-portal:
   appId: itgix-portal
   externalsecretEnv:
     enabled: true
+    secretStoreName: "secretstore-azure"
     env:
     - name: "DB_USERNAME"
       key: "itgix-portal-db-credentials"
