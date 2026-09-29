@@ -60,7 +60,7 @@ spec:
                   - /
                 port: 80
             tls:
-              -  secretName: itgix-portal-tls
+              - secretName: itgix-portal-tls
                 hosts:
                   - itgix-portal-{{ index .Values "infra-services" "environment" }}-{{ index .Values "infra-services" "region" }}.{{ index .Values "infra-services" "dns_main_domain" }}
     path: helm/itgix-portal
