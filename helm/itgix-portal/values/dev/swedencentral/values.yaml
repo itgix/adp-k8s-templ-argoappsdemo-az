@@ -10,19 +10,19 @@ itgix-portal:
   # Ingress hostname override for this environment
   ingress:
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: itgix-portal-dev-swedencentral.contoso.itigix.eu
+      external-dns.alpha.kubernetes.io/hostname: itgix-portal.adp.csiliev.eu
     hosts:
-    - host: itgix-portal-dev-swedencentral.contoso.itigix.eu
+    - host: itgix-portal.adp.csiliev.eu
       paths:
         - /
       port: 80
     tls: 
     - secretName: itgix-portal-tls
       hosts:
-        - itgix-portal-dev-swedencentral.contoso.itigix.eu
+        - itgix-portal.adp.csiliev.eu
   
   # ConfigMap environment overrides
   cm:
     env:
-      OAUTH_REDIRECT_URI: "https://itgix-portal-dev-swedencentral.contoso.itigix.eu/login/oauth2/code/google-employee"
-      FRONTEND_URL: "https://itgix-portal-dev-swedencentral.contoso.itigix.eu"
+      OAUTH_REDIRECT_URI: "https://itgix-portal.adp.csiliev.eu/login/oauth2/code/google-employee"
+      FRONTEND_URL: "https://itgix-portal.adp.csiliev.eu"
