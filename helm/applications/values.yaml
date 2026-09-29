@@ -7,7 +7,7 @@ infra-services:
 
   region: swedencentral
   environment: dev
-  dns_main_domain: contoso.itigix.eu
+  dns_main_domain: adp.csiliev.eu
   dns_private_zone: adp.csiliev.eu
   
   # Azure PostgreSQL configuration
