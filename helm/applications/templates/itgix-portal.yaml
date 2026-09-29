@@ -28,18 +28,18 @@ spec:
           externalsecretEnv:
             enabled: true
             env:
-            - name: "DB_USERNAME"
-              key: "{{  index .Values "infra-services" "db_credentials_secret_name" }}"
-              property: "username"
-            - name: "DB_PASSWORD"
-              key: "{{  index .Values "infra-services" "db_credentials_secret_name" }}"
-              property: "password"
-            - name: "GOOGLE_CLIENT_ID"
-              key: "{{  index .Values "infra-services" "google_oauth_secret_name" }}"
-              property: "client-id"
-            - name: "GOOGLE_CLIENT_SECRET"
-              key: "{{  index .Values "infra-services" "google_oauth_secret_name" }}"
-              property: "client-secret"
+              - name: "DB_USERNAME"
+                key: "{{  index .Values "infra-services" "db_credentials_secret_name" }}"
+                property: "username"
+              - name: "DB_PASSWORD"
+                key: "{{  index .Values "infra-services" "db_credentials_secret_name" }}"
+                property: "password"
+              - name: "GOOGLE_CLIENT_ID"
+                key: "{{  index .Values "infra-services" "google_oauth_secret_name" }}"
+                property: "client-id"
+              - name: "GOOGLE_CLIENT_SECRET"
+                key: "{{  index .Values "infra-services" "google_oauth_secret_name" }}"
+                property: "client-secret"
           cm:
             env:
               DB_URL: {{  index .Values "infra-services" "postgres_server_endpoint" }}
