@@ -42,7 +42,7 @@ spec:
                 property: "client-secret"
           cm:
             env:
-              DB_URL: {{  index .Values "infra-services" "postgres_server_endpoint" }}
+              DB_URL: "{{  index .Values "infra-services" "postgres_server_endpoint" }}"
               OAUTH_REDIRECT_URI: "https://itgix-portal-{{ index .Values "infra-services" "environment" }}-{{ index .Values "infra-services" "region" }}.{{ index .Values "infra-services" "dns_main_domain" }}/login/oauth2/code/google-employee"
               FRONTEND_URL: "https://itgix-portal-{{ index .Values "infra-services" "environment" }}-{{ index .Values "infra-services" "region" }}.{{ index .Values "infra-services" "dns_main_domain" }}"
               {{- if (index .Values "infra-services" "itgix_portal_employee_login_enabled") }}
