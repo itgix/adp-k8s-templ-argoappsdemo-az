@@ -37,15 +37,14 @@ itgix-portal:
       DB_NAME: itgix_portal
       OAUTH_REDIRECT_URI: "https://itgix-portal.adplab.itgix.eu/login/oauth2/code/google-employee"
       FRONTEND_URL: "https://itgix-portal.adplab.itgix.eu"
-    dynamic:
-      DATASOURCE_DB_URL: "jdbc:postgresql://{{ .Values.global.vars.DB_HOST }}:5432/{{ .Values.itgix-portal.cm.env.DB_NAME }}?{{ .Values.global.vars.BASE_DB_OPTS }}"
-      DB_HOST: "{{ .Values.global.vars.DB_HOST }}"
-      REGION_NAME: "{{ .Values.global.env.AZURE_REGION }}"
-      AZURE_REGION: "{{ .Values.global.env.AZURE_REGION }}"
-      REDIS_HOST: "{{ .Values.global.vars.BASE_REDIS_HOST }}"
+      DATASOURCE_DB_URL: "jdbc:postgresql://psql-contoso-dev-swedencentral.postgres.database.azure.com:5432/itgix_portal?ssl=true&sslmode=require"
+      DB_HOST: "psql-contoso-dev-swedencentral.postgres.database.azure.com"
+      REGION_NAME: "swedencentral"
+      AZURE_REGION: "swedencentral"
+      REDIS_HOST: "x-k8s-redis-headless"
       REDIS_PORT: "6379"
       REDIS_USE_SSL: "false"
-      REDIS_USERNAME: "{{ .Values.global.vars.BASE_REDIS_USER }}"
+      REDIS_USERNAME: "default"
 
   ingress:
     enabled: true
